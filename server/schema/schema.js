@@ -126,6 +126,17 @@ const mutation = new GraphQLObjectType({
                 return pin.save();
             }
         },
+
+        //Delete Pin by ID
+        deletePin: {
+            type: PinType,
+            args: {
+                id: { type: GraphQLNonNull(GraphQLID) },
+            },
+            resolve(parent, args) {
+                return Pin.findByIdAndDelete(args.id)
+            }
+        },
     }
 })
 
