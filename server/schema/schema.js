@@ -1,12 +1,13 @@
-const { pins, users } = require('./testData');
+//import mongoose models
+const User = require('../models/User');
+const Pin = require('../models/Pin');
 
-const { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLSchema, GraphQLList } = require('graphql');
+const { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLSchema, GraphQLList, GraphQLNonNull } = require('graphql');
 
 const UserType = new GraphQLObjectType({
     name: 'User',
     fields: () => ({
         id: { type: GraphQLID },
-        name: { type: GraphQLString },
         username: { type: GraphQLString },
         email: { type: GraphQLString },
         password: { type: GraphQLString }
@@ -28,13 +29,14 @@ const PinType = new GraphQLObjectType({
     })
 });
 
+//Queries
 const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
         pins: {
             type: new GraphQLList(PinType),
             resolve(parent, args) {
-                return pins;
+                return Pin.find();
             }
         },
         // Future modification to have a new GET by some predefined radius to user location
@@ -42,25 +44,49 @@ const RootQuery = new GraphQLObjectType({
             type: PinType,
             args: { id: { type: GraphQLID } },
             resolve(parent, args) {
-                return pins.find((pin) => pin.id === args.id);
+                return Pin.findById(args.id)
             }
         },
         users: {
             type: new GraphQLList(UserType),
             resolve(parent, args) {
-                return users;
+                return User.find();
             }
         },
         user: {
             type: UserType,
             args: { id: { type: GraphQLID } },
             resolve(parent, args) {
-                return users.find((user) => user.id === args.id);
+                return User.findById(args.id);
             }
         }
     }
 });
 
+//Mutations
+const mutation = new GraphQLObjectType({
+    name: 'Mutation',
+    fields: {
+        addUser: {
+            type: UserType,
+            args: {
+                username: { type: GraphQLNonNull(GraphQLString) },
+                email: { type: GraphQLNonNull(GraphQLString) },
+                password: { type: GraphQLNonNull(GraphQLString) }
+            },
+            resolve(parent, args) {
+                const user = new User({
+                    username: args.username,
+                    email: args.email,
+                    password: args.password
+                });
+                return user.save();
+            }
+        }
+    }
+})
+
 module.exports = new GraphQLSchema({
-    query: RootQuery
+    query: RootQuery,
+    mutation
 })

@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
-const PegSchema = new mongoose.Schema({
+const PinSchema = new mongoose.Schema({
     id: {
-        type: DataTypes.INTEGER,
+        type: mongoose.Schema.Types.ObjectId,
         autoIncrement: true,
         primaryKey: true
     },
