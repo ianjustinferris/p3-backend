@@ -22,6 +22,7 @@ const PinType = new GraphQLObjectType({
         username: { type: GraphQLString },
         title: { type: GraphQLString },
         description: { type: GraphQLString },
+        thumbnail: { type: GraphQLString },
         lat: { type: GraphQLString },
         lon: { type: GraphQLString },
         URL: { type: GraphQLString },
@@ -67,6 +68,8 @@ const RootQuery = new GraphQLObjectType({
 const mutation = new GraphQLObjectType({
     name: 'Mutation',
     fields: {
+
+        //Create new User
         addUser: {
             type: UserType,
             args: {
@@ -82,7 +85,47 @@ const mutation = new GraphQLObjectType({
                 });
                 return user.save();
             }
-        }
+        },
+
+        //Delete User by ID
+        deleteUser: {
+            type: UserType,
+            args: {
+                id: { type: GraphQLNonNull(GraphQLID) },
+            },
+            resolve(parent, args) {
+                return User.findByIdAndDelete(args.id)
+            }
+        },
+
+        //Create new Pin
+        addPin: {
+            type: PinType,
+            args: {
+                //username of User who created it => link User model to Pin model
+                username: { type: GraphQLNonNull(GraphQLString) },
+                title: { type: GraphQLNonNull(GraphQLString) },
+                description: { type: GraphQLString },
+                thumbnail: { type: GraphQLString },
+                lat: { type: GraphQLNonNull(GraphQLString) },
+                lon: { type: GraphQLNonNull(GraphQLString) },
+                URL: { type: GraphQLNonNull(GraphQLString) },
+                filename: { type: GraphQLNonNull(GraphQLString) }
+            },
+            resolve(parent, args) {
+                const pin = new Pin({
+                    username: args.username,
+                    title: args.title,
+                    description: args.description,
+                    thumbnail: args.thumbnail,
+                    lat: args.lat,
+                    lon: args.lon,
+                    URL: args.URL,
+                    filename: args.filename,
+                });
+                return pin.save();
+            }
+        },
     }
 })
 
