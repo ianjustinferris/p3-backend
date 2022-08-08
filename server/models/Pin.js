@@ -1,11 +1,6 @@
 const mongoose = require('mongoose');
 
 const PinSchema = new mongoose.Schema({
-    // id: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     autoIncrement: true,
-    //     primaryKey: true
-    // },
 
     username: {
         type: String,
@@ -14,11 +9,10 @@ const PinSchema = new mongoose.Schema({
 
     title: {
         type: String,
-        require: true,
-        min: 3
+        require: true
     },
 
-    //use regex to restrict file types?
+    //use regex
     thumbnail: {
         type: String,
     },
@@ -41,7 +35,7 @@ const PinSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    //use regex to restrict file types?
+    //use regex 
     filename: {
         type: String,
         required: true
